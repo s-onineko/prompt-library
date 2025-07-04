@@ -3,6 +3,20 @@ import pandas as pd
 from deep_translator import GoogleTranslator
 from textblob import TextBlob
 
+nltk_packages = [
+    "brown",
+    "punkt",
+    "averaged_perceptron_tagger",
+    "conll2000",
+    "wordnet"
+]
+for pkg in nltk_packages:
+    try:
+        nltk.data.find(f"corpora/{pkg}")
+    except LookupError:
+        nltk.download(pkg)
+
+
 st.set_page_config(layout="wide")
 st.title("PROMPT LIBRARY")
 st.write(" #### S&A GenAI Workshop- ORIGINAL SYSTEM / フレーズ抽出・辞書化システム")
