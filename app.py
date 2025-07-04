@@ -4,12 +4,10 @@ from googletrans import Translator
 from textblob import TextBlob
 import nltk
 
-try:
-    _ = TextBlob("test").tags  # 試しに動かす
-except Exception:
-    nltk.download('punkt')
-    nltk.download('averaged_perceptron_tagger')
-
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('brown')
+nltk.download('wordnet')
 
 st.set_page_config(layout="wide")
 st.markdown(
