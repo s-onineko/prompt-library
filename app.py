@@ -67,7 +67,6 @@ if uploaded_file:
         user_options = ["All"] + sorted(phrase_df["user"].unique())
         type_options = ["All"] + sorted(phrase_df["type"].unique())
 
-        # セッション状態で選択ユーザー・タイプを保持
         selected_user = st.selectbox("ユーザーで絞り込む", user_options, key="selected_user")
         selected_type = st.selectbox("タイプで絞り込む", type_options, key="selected_type")
 
@@ -80,43 +79,51 @@ if uploaded_file:
 
         choices = filtered_df["phrase_ja"].tolist()
 
-        # 過去の選択値を復元・維持
-        if "selected_phrases_ja" not in st.session_state:
-            st.session_state.selected_phrases_ja = []
+        # --- グローバル選択管理（全phrase_jaをキーに持つ） ---
+        if "global_selected_phrases_ja" not in st.session_state:
+            st.session_state.global_selected_phrases_ja = []
 
-        # 絞り込みにより消えた選択肢を除外
-        prev_selected = [v for v in st.session_state.selected_phrases_ja if v in choices]
+        # 直前の選択内容（choicesに残ってる分だけ）
+        current_selected = [v for v in st.session_state.global_selected_phrases_ja if v in choices]
 
-        # multiselectをセッション状態で管理
+        # multiselect（表示はフィルター済み、状態はglobal）
         selected = st.multiselect(
             "使いたいフレーズ（日本語）を選択してください",
             choices,
-            default=prev_selected,
-            key="selected_phrases_ja"
+            default=current_selected,
         )
 
-        # phrase英語バージョンに変換
-        selected_phrases = [
-            filtered_df[filtered_df["phrase_ja"] == s]["phrase"].values[0]
-            for s in selected
+        # -- global管理を更新 --
+        # フィルター外のものも含めて記憶する
+        # まず今表示分(current_selected)を全部外し、選択された分(selected)を追加する
+        # それ以外の（フィルター外の）選択肢はそのまま残す
+        base_selected = set(st.session_state.global_selected_phrases_ja) - set(current_selected)
+        st.session_state.global_selected_phrases_ja = list(base_selected | set(selected))
+
+        # -- 編集テキストもglobal管理 --
+        # 英語phraseのリスト
+        all_selected_phrases = [
+            phrase_df[phrase_df["phrase_ja"] == s]["phrase"].values[0]
+            for s in st.session_state.global_selected_phrases_ja
+            if s in phrase_df["phrase_ja"].values
         ]
-        prompt_text = ", ".join(selected_phrases) + " --ar 16:9"
+        prompt_text = ", ".join(all_selected_phrases) + " --ar 16:9"
 
-        # テキストエリアもセッション管理
-        if "prompt_text" not in st.session_state:
-            st.session_state.prompt_text = prompt_text
-        # フレーズ選択が変わった時だけ初期値を更新
-        elif st.session_state.selected_phrases_ja != prev_selected:
-            st.session_state.prompt_text = prompt_text
+        if "global_prompt_text" not in st.session_state:
+            st.session_state.global_prompt_text = prompt_text
 
-        # テキストエリア本体
-        def update_prompt_text():
-            st.session_state.prompt_text = st.session_state.prompt_text_area
+        # multiselectの選択が変化した時のみ自動更新（テキストエリア編集優先）
+        # choices(=表示)が変わった場合、textも自動同期したい場合は以下判定を有効に
+        if set(all_selected_phrases) != set(st.session_state.global_prompt_text.replace(" --ar 16:9", "").split(", ")):
+            st.session_state.global_prompt_text = prompt_text
+
+        def update_text():
+            st.session_state.global_prompt_text = st.session_state.prompt_text_area
 
         st.text_area(
             "画像生成用テキスト（編集可）",
-            value=st.session_state.prompt_text,
+            value=st.session_state.global_prompt_text,
             height=100,
             key="prompt_text_area",
-            on_change=update_prompt_text
+            on_change=update_text
         )
