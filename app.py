@@ -3,6 +3,14 @@ import pandas as pd
 from googletrans import Translator
 from textblob import TextBlob
 
+
+try:
+    _ = TextBlob("test").tags  # 試しに動かす
+except Exception:
+    nltk.download('punkt')
+    nltk.download('averaged_perceptron_tagger')
+
+
 st.set_page_config(layout="wide")
 st.markdown(
     "<h1 style='color: #C3002F;'>PROMPT LIBRARY</h1>",
