@@ -1,4 +1,4 @@
-deep-translator
+deep-translator>=1.11.4
 textblob
 streamlit
 pandas
