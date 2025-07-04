@@ -1,3 +1,6 @@
-googletrans==3.1.0a0
+deep-translator
+textblob
+streamlit
+pandas
 nltk==3.8.1
 textblob==0.17.1 
