@@ -81,6 +81,10 @@ if uploaded_file:
             for s in selected
         ]
 
-        prompt_text = ", ".join(selected_phrases)
+        selected_phrases = [
+            filtered_df[filtered_df["phrase_ja"] == s]["phrase"].values[0]
+            for s in selected
+        ]
+        prompt_text = ", ".join(selected_phrases) + " --ar 16:9"
         st.text_area("画像生成用テキスト（編集可）", prompt_text, height=100, key="prompt_text_area")
 
