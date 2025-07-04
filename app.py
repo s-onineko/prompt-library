@@ -2,26 +2,9 @@ import streamlit as st
 import pandas as pd
 from googletrans import Translator
 from textblob import TextBlob
-import nltk
-
-# NLTKリソースを起動時にダウンロード（すでにある場合はスキップされる）
-def download_nltk_data():
-    try:
-        _ = TextBlob("test").tags  # 品詞タグ付けを試みてエラーが出たらDL
-    except:
-        st.write("Downloading required NLTK corpora...")
-        nltk.download('punkt')
-        nltk.download('averaged_perceptron_tagger')
-        nltk.download('brown')
-        nltk.download('wordnet')
-
-download_nltk_data()
 
 st.set_page_config(layout="wide")
-st.markdown(
-    "<h1 style='color: #C3002F;'>PROMPT LIBRARY</h1>",
-    unsafe_allow_html=True
-)
+st.title("PROMPT LIBRARY")
 st.write(" #### S&A GenAI Workshop- ORIGINAL SYSTEM / フレーズ抽出・辞書化システム")
 st.write("***")
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください（user, type, prompt列）", type=["csv"])
