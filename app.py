@@ -17,9 +17,11 @@ for pkg in nltk_packages:
     except LookupError:
         nltk.download(pkg)
 
-
 st.set_page_config(layout="wide")
-st.title("PROMPT LIBRARY")
+st.markdown(
+    "<div style='font-size:48px; font-weight:bold; color:#C3002F;'>PROMPT LIBRARY</div>",
+    unsafe_allow_html=True
+)
 st.write(" #### S&A GenAI Workshop- ORIGINAL SYSTEM / フレーズ抽出・辞書化システム")
 st.write("***")
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください（user, type, prompt列）", type=["csv"])
