@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from deep_translator import GoogleTranslator
 from textblob import TextBlob
+import nltk
 
 nltk_packages = [
     "brown",
