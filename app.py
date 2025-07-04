@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from googletrans import Translator
 from textblob import TextBlob
-
+import nltk
 
 try:
     _ = TextBlob("test").tags  # 試しに動かす
