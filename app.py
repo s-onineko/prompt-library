@@ -67,9 +67,11 @@ if uploaded_file:
         user_options = ["All"] + sorted(phrase_df["user"].unique())
         type_options = ["All"] + sorted(phrase_df["type"].unique())
 
-        selected_user = st.selectbox("ユーザーで絞り込む", user_options)
-        selected_type = st.selectbox("タイプで絞り込む", type_options)
+        # セッション状態で選択ユーザー・タイプを保持
+        selected_user = st.selectbox("ユーザーで絞り込む", user_options, key="selected_user")
+        selected_type = st.selectbox("タイプで絞り込む", type_options, key="selected_type")
 
+        # フィルタ適用
         filtered_df = phrase_df.copy()
         if selected_user != "All":
             filtered_df = filtered_df[filtered_df["user"] == selected_user]
@@ -77,16 +79,44 @@ if uploaded_file:
             filtered_df = filtered_df[filtered_df["type"] == selected_type]
 
         choices = filtered_df["phrase_ja"].tolist()
-        selected = st.multiselect("使いたいフレーズ（日本語）を選択してください", choices)
-        selected_phrases = [
-            filtered_df[filtered_df["phrase_ja"] == s]["phrase"].values[0]
-            for s in selected
-        ]
 
+        # 過去の選択値を復元・維持
+        if "selected_phrases_ja" not in st.session_state:
+            st.session_state.selected_phrases_ja = []
+
+        # 絞り込みにより消えた選択肢を除外
+        prev_selected = [v for v in st.session_state.selected_phrases_ja if v in choices]
+
+        # multiselectをセッション状態で管理
+        selected = st.multiselect(
+            "使いたいフレーズ（日本語）を選択してください",
+            choices,
+            default=prev_selected,
+            key="selected_phrases_ja"
+        )
+
+        # phrase英語バージョンに変換
         selected_phrases = [
             filtered_df[filtered_df["phrase_ja"] == s]["phrase"].values[0]
             for s in selected
         ]
         prompt_text = ", ".join(selected_phrases) + " --ar 16:9"
-        st.text_area("画像生成用テキスト（編集可）", prompt_text, height=100, key="prompt_text_area")
 
+        # テキストエリアもセッション管理
+        if "prompt_text" not in st.session_state:
+            st.session_state.prompt_text = prompt_text
+        # フレーズ選択が変わった時だけ初期値を更新
+        elif st.session_state.selected_phrases_ja != prev_selected:
+            st.session_state.prompt_text = prompt_text
+
+        # テキストエリア本体
+        def update_prompt_text():
+            st.session_state.prompt_text = st.session_state.prompt_text_area
+
+        st.text_area(
+            "画像生成用テキスト（編集可）",
+            value=st.session_state.prompt_text,
+            height=100,
+            key="prompt_text_area",
+            on_change=update_prompt_text
+        )
