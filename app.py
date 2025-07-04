@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from textblob import TextBlob
 
 st.set_page_config(layout="wide")
@@ -8,6 +8,7 @@ st.title("PROMPT LIBRARY")
 st.write(" #### S&A GenAI Workshop- ORIGINAL SYSTEM / フレーズ抽出・辞書化システム")
 st.write("***")
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください（user, type, prompt列）", type=["csv"])
+
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
     st.write("アップロードしたデータ", df.head())
@@ -29,13 +30,12 @@ if uploaded_file:
     phrase_df = pd.DataFrame(phrase_rows).drop_duplicates().reset_index(drop=True)
     st.write("抽出フレーズ一覧", phrase_df)
 
-    # ---- Google翻訳 ----
+    # ---- deep-translatorでGoogle翻訳 ----
     if st.button("日本語訳を付与（処理を開始）"):
-        translator = Translator()
         phrase_ja = []
         for phrase in phrase_df["phrase"]:
             try:
-                ja = translator.translate(phrase, src="en", dest="ja").text
+                ja = GoogleTranslator(source='auto', target='ja').translate(phrase)
             except Exception as e:
                 ja = "(翻訳エラー)"
             phrase_ja.append(ja)
@@ -61,7 +61,11 @@ if uploaded_file:
 
         choices = filtered_df["phrase_ja"].tolist()
         selected = st.multiselect("使いたいフレーズ（日本語）を選択してください", choices)
-        selected_phrases = [filtered_df[filtered_df["phrase_ja"] == s]["phrase"].values[0] for s in selected]
+        selected_phrases = [
+            filtered_df[filtered_df["phrase_ja"] == s]["phrase"].values[0]
+            for s in selected
+        ]
 
         prompt_text = ", ".join(selected_phrases)
         st.text_area("画像生成用テキスト（編集可）", prompt_text, height=100, key="prompt_text_area")
+
