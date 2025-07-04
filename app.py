@@ -127,6 +127,3 @@ if uploaded_file:
             key="prompt_text_area",
             on_change=update_text
         )
-        if all_selected_phrases_ja:
-            st.markdown("**選択中フレーズの日本語訳：**")
-            st.markdown("<br>".join(all_selected_phrases_ja), unsafe_allow_html=True)
