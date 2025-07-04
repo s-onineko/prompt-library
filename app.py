@@ -4,7 +4,10 @@ from googletrans import Translator
 from textblob import TextBlob
 
 st.set_page_config(layout="wide")
-st.title("#C3002F:[PROMPT LIBRARY]")
+st.markdown(
+    "<h1 style='color: #C3002F;'>PROMPT LIBRARY</h1>",
+    unsafe_allow_html=True
+)
 st.write(" #### S&A GenAI Workshop- ORIGINAL SYSTEM / フレーズ抽出・辞書化システム")
 st.write("***")
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください（user, type, prompt列）", type=["csv"])
