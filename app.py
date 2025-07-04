@@ -23,7 +23,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.write(" #### S&A GenAI Workshop- ORIGINAL SYSTEM / フレーズ抽出・プロンプト生成システムβ")
-st.write(" ##### Created by Shohei ONIMARU, R&D Promotion Group, DX Promotion Dept., ADK Marketing Solutions Inc.")
+st.write(" ##### Created by Shohei ONIMARU")
+st.write(" ##### R&D Promotion Group, DX Promotion Dept., ADK Marketing Solutions Inc.")
 st.write("***")
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください（user, type, prompt列）", type=["csv"])
 
