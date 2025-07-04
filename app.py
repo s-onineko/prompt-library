@@ -4,10 +4,18 @@ from googletrans import Translator
 from textblob import TextBlob
 import nltk
 
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('brown')
-nltk.download('wordnet')
+# NLTKリソースを起動時にダウンロード（すでにある場合はスキップされる）
+def download_nltk_data():
+    try:
+        _ = TextBlob("test").tags  # 品詞タグ付けを試みてエラーが出たらDL
+    except:
+        st.write("Downloading required NLTK corpora...")
+        nltk.download('punkt')
+        nltk.download('averaged_perceptron_tagger')
+        nltk.download('brown')
+        nltk.download('wordnet')
+
+download_nltk_data()
 
 st.set_page_config(layout="wide")
 st.markdown(
